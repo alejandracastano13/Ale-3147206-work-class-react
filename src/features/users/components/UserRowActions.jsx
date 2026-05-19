@@ -23,10 +23,6 @@ export default function UserRowActions({ user }) {
     // Acción para eliminar el usuario
     // Actualmente solo imprime en consola el id
     // En una aplicación real aquí se llamaría a la API
-    const handleDelete = () => {
-        console.log("Eliminar usuario", user.id);
-    };
-
     return (
         // Contenedor de los botones de acciones
         <div className="flex gap-2">
