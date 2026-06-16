@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { AuthLayout, DashboardLayout }  from "@/shared";
+import { AuthLayout, DashboardLayout,  ProtectedRoute}  from "@/shared";
 import { CreateUserPage, ListUserPage } from "@/features/users"
 import { Login  } from "@/features/auth";
 import { HomePage  } from "@/features/home";
@@ -21,7 +21,11 @@ const router = createBrowserRouter([
         path: "/dashboard",
         element: <DashboardLayout/>,
     children: [
-        { path: "/dashboard/createUser", element: <CreateUserPage /> },  // 👈
+        { path: "/dashboard/createUser",
+             element: (<ProtectedRoute>
+                    <CreateUserPage />
+                </ProtectedRoute>
+                )  },  // 👈
         { path: "/dashboard/auth", element: <Login /> },
         { path: "/dashboard/userList", element: <ListUserPage /> },
         { path: "/dashboard/home", element: <HomePage /> },

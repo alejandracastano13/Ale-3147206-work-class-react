@@ -13,12 +13,18 @@ export const authService = {
             throw new Error("Credenciales inválidas");
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        //Const isMAtch = password === user.password;
+        // const isMatch = await bcrypt.compare(password, user.password);
+        // //Const isMAtch = password === user.password;
 
-        if (!isMatch){
-            throw new Error ("Credenciales inválidas");
-        }
+        // if (!isMatch){
+        //     throw new Error ("Credenciales inválidas");
+        // }
+
+        const isMatch = password === user.password;
+
+if (!isMatch){
+    throw new Error("Credenciales inválidas");
+}
 
         if (!user.is_active){
             throw new Error("USUARIO INACTIVO");

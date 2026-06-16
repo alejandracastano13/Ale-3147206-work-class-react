@@ -36,6 +36,8 @@ app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/access", accessRoutes);
 
+app.use(express.json());
+
 
 // Exportamos la aplicación configurada
 // El arranque del servidor se hace en server.js

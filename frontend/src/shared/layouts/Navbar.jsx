@@ -5,8 +5,18 @@ import logo from "@/assets/images/logo-2.png";
 import { useState } from "react";
 import SearchField from "../components/SearchField";
 
+import {  useNavigate } from "react-router-dom";
+import { logoutService } from "@/features/auth/services/logoutService";
+
 
 export default function Navbar() {
+
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate("/auth")
+    }
     const [search, setSearch] = useState("");
 
     const handleSearch = (value) => {
@@ -85,7 +95,7 @@ export default function Navbar() {
                             </DropdownTrigger>
 
                             <DropdownContent className="right-0 w-48">
-                                <DropdownItem>
+                                <DropdownItem onClick = {handleLogout}>
                                     <Link to="/dashboard/auth" className="block w-full">
                                         Cerrar sesion
                                     </Link>

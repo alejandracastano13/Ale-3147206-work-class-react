@@ -221,6 +221,7 @@ const handleSubmit = async (e) => {
                         error={errors.userDocumentType}
                     />
                     <Input
+                    
                         label="numero de documento"
                         name="userDocumentNumber"
                         placeholder="Ingrese su numero de documento"

@@ -2,6 +2,7 @@ import { useState,  } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { SquareArrowRightEnter, Menu } from "lucide-react";
 
+import { login } from "../services/authService";
 
 import {
   Input,
@@ -21,10 +22,7 @@ export default function UserRegisterForm() {
         userEmail: "",
         userPassword: "",
 
-        //Flags booleanos
-        isStaff: false,
-        isActive: true,
-        isSuperUser: false,
+    
     });
     const [errors, setErrors ] = useState({});
 
@@ -53,104 +51,108 @@ export default function UserRegisterForm() {
         }));
     }
     
-    //=======================================================================//
-    //                               HANDLE SUBMIT 
-    //=======================================================================//
 
-    /**
-     * Funcion que se ejecuta cuando se envia al formulario 
-     */
+  //            Handle Submit
+  // ======================================
+  /**
+   * Función que se ejecuta cuando se envía el formulario
+   */
 
-    // Función que se ejecuta cuando se envía el formulario
-    const handleSubmit = (e) => {
-    // Evita que el formulario recargue la página
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Se valida el objeto formData usando el esquema definido con Zod
-    // safeParse devuelve un objeto indicando si la validación fue exitosa o no
     const result = LoginSchema.safeParse(formData);
 
-    // Si la validación falla
     if (!result.success) {
-        // Objeto donde se almacenarán los errores por campo
-        const fieldErrors = {};
-
-        // Zod devuelve los errores en un arreglo llamado issues
-        // Se recorren para asociar cada error a su campo correspondiente
-        result.error.issues.forEach((issue) => {
-            // issue.path contiene la ruta del campo que falló
-            const field = issue.path[0];
-
-            // Se guarda el mensaje de error en el objeto fieldErrors
-            fieldErrors[field] = issue.message;
-        });
-
-        // Se actualiza el estado de errores para mostrarlos en el formulario
-        setErrors(fieldErrors);
-
-        // Se detiene la ejecución porque el formulario tiene errores
-        return;
+      const fieldErrors = {};
+      result.error.issues.forEach((issue) => {
+        fieldErrors[issue.path[0]] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return;
     }
-    // Si la validación es exitosa se limpian los errores anteriores
+
     setErrors({});
 
-    // result.data contiene los datos ya validados por Zod
-    console.log("Usuario válido:", result.data);
-};
+    try {
+      const data = await login(result.data);
 
-    return (
-        <div className="flex flex-col justify-center items-center h-screen ">
-            <h1 className=" text-text-primary text-2xl mb-6 text-center pd-6 ">
-              Inicio de Sesion 
-            </h1> 
- 
-            <form 
-                className="grid grid-cols-1 items-center gap-6 "
-                onSubmit={handleSubmit}
-             >
-   
-              {/**Inputs */}
-              <div className="grid grid-cols-1 my-0 mx-auto gap-6  border p-[24px] rounded-2xl">
+      console.log("LOGIN RESPONSE: ", data);
 
-                    
-                    <Input   
-                        label="Correo"   
-                        name="userEmail"                 
-                        type="email"
-                        placeholder="Ingrese su correo"
-                        value={formData.userEmail}
-                        onChange={handleChange}
-                        error={errors.userEmail}
-                    />
-                    <Input        
-                        label="Contraseña"
-                        name="userPassword"
-                        type="password"
-                        placeholder="Ingrese su contraseña"
-                        value={formData.userPassword}
-                        onChange={handleChange}
-                        error={errors.userPassword}
-                    /> 
-                {/* Actions */}
-                <div className="flex items-end  justify-end gap-6">
-                    <Button
-                        variant="secondary"
-                        size="sm"
-                    >
-                        Cancelar
-                    </Button>
+      sessionStorage.setItem("token", data.token); //clave
 
-                    <Button
-                        variant="primary"
-                        size="md"
-                        onClick = {() => navigate("/dashboard")} 
-                    >
-                        Ingresar
-                        
-                    </Button>              
-                </div>
-              </div>
-            </form>
+      navigate("/dashboard/userList");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  return (
+    <div className="flex flex-col justify-center h-screen ">
+      <h1 className="text-text-primary text-2xl mb-6 text-center pt-6">
+        Inicio de Sesión
+      </h1>
+
+      <form
+        className="grid grid-cols-1 items-center gap-6"
+        onSubmit={handleSubmit}
+      >
+        {/* Inputs */}
+        <div className="grid grid-cols-1 gap-6 my-auto mx-auto border p-[48px] rounded-[6px] ">
+
+          <Input
+            label="Correo"
+            name="userEmail"
+            type="email"
+            placeholder="Ingrese su correo"
+            value={formData.userEmail}
+            onChange={handleChange}
+            error={errors.userEmail}
+          />
+
+          <Input
+            label="Contreseña"
+            name="userPassword"
+            placeholder="Ingrese su contraseña"
+            type="password"
+            value={formData.userPassword}
+            onChange={handleChange}
+            error={errors.userPassword}
+          />
+
+
+          {/* Actions */}
+          <div className="flex items-center justify-center gap-12">
+            <Button variant="secondary" size="sm" >
+              Cancelar
+            </Button>
+
+            <Button 
+            variant="primary" 
+            size="md" 
+            type="submit">
+              Ingresar
+            </Button>
+
+            {/* Icon button */}
+            {/* <Link to="/dashboard">
+              <IconButton variant="ghost">
+                <SquareArrowRightEnter />
+              </IconButton>
+            </Link> */}
+
+            {/* <a href="/DashboardLayout">
+              <IconButton>
+                <SquareArrowRightEnter />
+              </IconButton>
+            </a> */}
+
+            {/* <IconButton onClick={() => navigate("/DashboardLayout")}>
+                <SquareArrowRightEnter />
+              </IconButton> */}
+          </div>
         </div>
-    );
+      </form>
+    </div>
+  );
 }
